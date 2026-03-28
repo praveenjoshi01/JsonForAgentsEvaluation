@@ -588,17 +588,22 @@ with col1:
 
                 # Schema stats
                 try:
-                    parsed = json.loads(edited)
-                    props = parsed.get("properties", {})
-                    required = parsed.get("required", [])
-                    depth = _get_depth(parsed) if 'parsed' else 1
+                    if edited.strip():
+                        parsed = json.loads(edited)
+                        if isinstance(parsed, dict):
+                            props = parsed.get("properties", {})
+                            required = parsed.get("required", [])
 
-                    c1, c2, c3 = st.columns(3)
-                    c1.metric("Fields", len(props))
-                    c2.metric("Required", len(required))
-                    c3.metric("Tokens", len(edited.split()))
-                except:
-                    st.error("⚠️ Invalid JSON")
+                            c1, c2, c3 = st.columns(3)
+                            c1.metric("Fields", len(props))
+                            c2.metric("Required", len(required))
+                            c3.metric("Tokens", len(edited.split()))
+                        else:
+                            st.warning("⚠️ Schema must be a JSON object")
+                except json.JSONDecodeError:
+                    st.error("⚠️ Invalid JSON syntax")
+                except Exception:
+                    pass
 
                 col_a, col_b = st.columns(2)
                 with col_b:
