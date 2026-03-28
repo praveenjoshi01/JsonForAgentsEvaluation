@@ -569,41 +569,44 @@ with col1:
                 st.warning("Please provide both a name and schema.")
 
     # Display existing schemas
-    schema_tabs = st.tabs(list(st.session_state.schemas.keys()))
-    for i, (name, schema_str) in enumerate(st.session_state.schemas.items()):
-        with schema_tabs[i]:
-            colors = ["#667eea", "#f093fb", "#4fd1c5", "#f6ad55", "#fc8181"]
-            color = colors[i % len(colors)]
-            st.markdown(f'<span class="schema-label" style="background:{color}22;color:{color};border:1px solid {color}44;">{name}</span>', unsafe_allow_html=True)
+    if st.session_state.schemas:
+        schema_tabs = st.tabs(list(st.session_state.schemas.keys()))
+        for i, (name, schema_str) in enumerate(st.session_state.schemas.items()):
+            with schema_tabs[i]:
+                colors = ["#667eea", "#f093fb", "#4fd1c5", "#f6ad55", "#fc8181"]
+                color = colors[i % len(colors)]
+                st.markdown(f'<span class="schema-label" style="background:{color}22;color:{color};border:1px solid {color}44;">{name}</span>', unsafe_allow_html=True)
 
-            edited = st.text_area(
-                f"Edit {name}",
-                value=schema_str,
-                height=250,
-                key=f"schema_{i}",
-                label_visibility="collapsed"
-            )
-            st.session_state.schemas[name] = edited
+                edited = st.text_area(
+                    f"Edit {name}",
+                    value=schema_str,
+                    height=250,
+                    key=f"schema_{i}",
+                    label_visibility="collapsed"
+                )
+                st.session_state.schemas[name] = edited
 
-            # Schema stats
-            try:
-                parsed = json.loads(edited)
-                props = parsed.get("properties", {})
-                required = parsed.get("required", [])
-                depth = _get_depth(parsed) if 'parsed' else 1
+                # Schema stats
+                try:
+                    parsed = json.loads(edited)
+                    props = parsed.get("properties", {})
+                    required = parsed.get("required", [])
+                    depth = _get_depth(parsed) if 'parsed' else 1
 
-                c1, c2, c3 = st.columns(3)
-                c1.metric("Fields", len(props))
-                c2.metric("Required", len(required))
-                c3.metric("Tokens", len(edited.split()))
-            except:
-                st.error("⚠️ Invalid JSON")
+                    c1, c2, c3 = st.columns(3)
+                    c1.metric("Fields", len(props))
+                    c2.metric("Required", len(required))
+                    c3.metric("Tokens", len(edited.split()))
+                except:
+                    st.error("⚠️ Invalid JSON")
 
-            col_a, col_b = st.columns(2)
-            with col_b:
-                if st.button("🗑️ Remove", key=f"remove_{i}", use_container_width=True):
-                    del st.session_state.schemas[name]
-                    st.rerun()
+                col_a, col_b = st.columns(2)
+                with col_b:
+                    if st.button("🗑️ Remove", key=f"remove_{i}", use_container_width=True):
+                        del st.session_state.schemas[name]
+                        st.rerun()
+    else:
+        st.info("No schema variants defined. Please add one above to begin! ⬆️")
 
     # Run evaluation button
     st.divider()
