@@ -206,7 +206,7 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
 if "test_prompt" not in st.session_state:
-    st.session_state.test_prompt = "What are the key benefits of microservices architecture over monolithic systems? Provide a structured technical answer."
+    st.session_state.test_prompt = "What are the key benefits of microservices architecture over monolithic systems? Provide a structured technical answer conforming to this schema:\n\n{{schema}}"
 
 if "eval_criteria" not in st.session_state:
     st.session_state.eval_criteria = [
@@ -259,6 +259,7 @@ with st.sidebar:
 
     st.divider()
     st.markdown("#### 📝 Test Prompt")
+    st.caption("Use `{{schema}}` to inject the JSON schema variant.")
     st.session_state.test_prompt = st.text_area(
         "The prompt sent to the agent with each schema variant",
         value=st.session_state.test_prompt,
@@ -287,10 +288,19 @@ def get_client():
 
 def run_agent_with_schema(client, schema_json: dict, prompt: str, model: str, temp: float):
     """Run an LLM call with a given JSON schema and measure efficiency."""
-    system_prompt = f"""You are a helpful AI agent. You MUST respond with valid JSON that conforms to the following JSON schema:
+    schema_str = json.dumps(schema_json, indent=2)
+    
+    if "{{schema}}" in prompt:
+        # User-defined placeholder injection
+        final_user_prompt = prompt.replace("{{schema}}", schema_str)
+        system_prompt = "You are a helpful AI agent. You MUST respond with valid JSON. Respond ONLY with valid JSON. No markdown, no explanation outside the JSON."
+    else:
+        # Default behavior: inject into system prompt
+        final_user_prompt = prompt
+        system_prompt = f"""You are a helpful AI agent. You MUST respond with valid JSON that conforms to the following JSON schema:
 
 ```json
-{json.dumps(schema_json, indent=2)}
+{schema_str}
 ```
 
 Respond ONLY with valid JSON. No markdown, no explanation outside the JSON."""
@@ -300,7 +310,7 @@ Respond ONLY with valid JSON. No markdown, no explanation outside the JSON."""
         model=model,
         messages=[
             {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": final_user_prompt}
         ],
         temperature=temp,
         response_format={"type": "json_object"},

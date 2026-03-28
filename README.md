@@ -10,31 +10,65 @@ SchemaGain is a 3-column Streamlit application that lets you A/B test JSON schem
 
 ## Architecture
 
-```
-┌──────────────────┐ ┌──────────────────────┐ ┌──────────────────────┐
-│  COLUMN 1        │ │  COLUMN 2            │ │  COLUMN 3            │
-│                  │ │                      │ │                      │
-│  Schema Variants │ │  Evaluation Criteria │ │  Results & Charts    │
-│  ─────────────── │ │  ──────────────────  │ │  ─────────────────── │
-│  • Add/edit/     │ │  • Define criteria   │ │  • Radar charts      │
-│    remove JSON   │ │  • AI suggestions    │ │  • Token bar charts  │
-│    schema vars   │ │  • Chat advisor for  │ │  • Latency plots     │
-│  • View stats    │ │    measurement Q&A   │ │  • Coverage details  │
-│  • Run eval      │ │  • Quick questions   │ │  • Recommendations   │
-│                  │ │                      │ │                      │
-└──────────────────┘ └──────────────────────┘ └──────────────────────┘
+```mermaid
+graph TD
+    User([User]) --> UI[Streamlit Interface]
+
+    subgraph "Column 1: Configuration"
+        UI --> Schemas[JSON Schema Variants]
+        UI --> Prompt[Test Prompt]
+    end
+
+    subgraph "Column 2: Logic & Guidance"
+        UI --> Criteria[Eval Criteria]
+        Criteria --> JudgeAPI[Judge LLM]
+        UI --> Advisor[AI Advisor Chat]
+    end
+
+    subgraph "Execution Engine"
+        Prompt & Schemas --> AgentAPI[Agent LLM]
+        AgentAPI -- "Filled JSON" --> Eval[Evaluation Logic]
+        Eval -- "JSON + Criteria" --> JudgeAPI
+    end
+
+    subgraph "Column 3: Comparison & Analysis"
+        JudgeAPI -- "Radar Charts" --> UI
+        Eval -- "Token/Latency Plots" --> UI
+        Eval -- "Coverage Report" --> UI
+        JudgeAPI -- "Auto Recommendations" --> UI
+    end
+
+    style Schemas fill:#667eea11,stroke:#667eea
+    style Criteria fill:#4fd1c511,stroke:#4fd1c5
+    style UI fill:#f6ad5511,stroke:#f6ad55
 ```
 
 ## Setup
 
+1. Clone the repository:
 ```bash
-pip install streamlit openai plotly pydantic
+git clone <repository-url>
+cd <repository-directory>
+```
+
+2. Create a virtual environment using `uv`:
+```bash
+uv venv
+```
+
+3. Activate the virtual environment:
+- On Windows: `.venv\Scripts\activate`
+- On macOS/Linux: `source .venv/bin/activate`
+
+4. Install the required packages:
+```bash
+uv pip install streamlit openai plotly pydantic
 ```
 
 ## Usage
 
 ```bash
-streamlit run app.py
+uv run streamlit run app.py
 ```
 
 1. Enter your **OpenAI API key** in the sidebar
@@ -42,6 +76,11 @@ streamlit run app.py
 3. **Column 2**: Define evaluation criteria or use AI to suggest more
 4. Click **Run Evaluation** to test all variants
 5. **Column 3**: View comparative results, charts, and recommendations
+
+### 🔄 Dynamic Schema Injection
+You can control exactly where the JSON schema is placed in your request by using the `{{schema}}` placeholder in your **Test Prompt**.
+- **Usage**: `Please extract the following information and conform to this schema: {{schema}}`
+- **Fallback**: if the placeholder is not found, SchemaGain will automatically inject the schema into the System Message for you.
 
 ## Features
 
