@@ -1,0 +1,20 @@
+{
+    "id": "prod_001",
+    "name": "SchemaGain",
+    "desc": "A 3-column Streamlit app to A/B test JSON schema variants against LLM agents.",
+    "goal": "Measure gain or loss from changing JSON schemas passed to LLM agents.",
+    "metrics": {
+        "eff": {
+            "tokens": 1240,
+            "latency_ms": 820
+        },
+        "cov": {
+            "required_fields_present": true,
+            "missing_fields": []
+        },
+        "qual": {
+            "accuracy_score": 0.91,
+            "judge_rationale": "Schema captures task intent and evaluation dimensions clearly."
+        }
+    }
+}

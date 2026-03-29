@@ -1,0 +1,38 @@
+{
+    "product": {
+        "id": "prod_001",
+        "name": "SchemaGain",
+        "description": "A Streamlit application for comparing JSON schema variants for LLM agents."
+    },
+    "experiment": {
+        "objective": "Measure the gain or loss from changing JSON schemas passed to LLM agents.",
+        "mode": "A/B testing",
+        "judge_type": "LLM-as-a-judge"
+    },
+    "evaluation": {
+        "dimensions": {
+            "efficiency": {
+                "metrics": [
+                    "token_cost",
+                    "latency_ms"
+                ],
+                "result": {
+                    "token_cost": 1240,
+                    "latency_ms": 820
+                }
+            },
+            "coverage": {
+                "required_fields": [
+                    "product",
+                    "experiment",
+                    "evaluation"
+                ],
+                "missing_fields": []
+            },
+            "quality": {
+                "score": 0.91,
+                "notes": "Structured enough for accurate judging and comparison."
+            }
+        }
+    }
+}

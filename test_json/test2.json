@@ -1,0 +1,44 @@
+{
+    "schema_name": "SchemaGain",
+    "schema_version": "v3",
+    "purpose": "Compare JSON schema variants for LLM agents",
+    "test_case": {
+        "input_type": "json_schema",
+        "task": "A/B test schema variants",
+        "expected_output": "Structured response with measurable efficiency, coverage, and quality"
+    },
+    "schema_variants": [
+        {
+            "variant_id": "A",
+            "structure": "flat",
+            "strength": "token efficient",
+            "weakness": "less explicit field grouping"
+        },
+        {
+            "variant_id": "B",
+            "structure": "nested",
+            "strength": "better coverage clarity",
+            "weakness": "more tokens"
+        },
+        {
+            "variant_id": "C",
+            "structure": "schema-first",
+            "strength": "best for judgeability",
+            "weakness": "most verbose"
+        }
+    ],
+    "judge_results": {
+        "efficiency": {
+            "best_variant": "A",
+            "reason": "Lowest token overhead and latency"
+        },
+        "coverage": {
+            "best_variant": "B",
+            "reason": "Captures required fields more explicitly"
+        },
+        "quality": {
+            "best_variant": "C",
+            "reason": "Most structured for accurate LLM-as-a-judge evaluation"
+        }
+    }
+}
